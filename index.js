@@ -1,25 +1,26 @@
 const express = require('express');
 const path = require('path');
-const members = require('./Members.js');
 const logger = require('./middleware/logger.js')
+
 const app = express();
 
 
 // Init middleware
-app.use(logger);
+// app.use(logger);
 
-// gets all members
-app.get('/api/members', (req, res) => {
-  res.json(members);
-});
+// Body Parser Middleware, parses body as json
+app.use(express.json());
 
-// get single members
-app.get('/api/members/:id', (req, res) => {
-  res.json(members.filter(member => member.id === parseInt(req.params.id)))
-});
+// Form submission, url encoded data
+app.use(express.urlencoded({extended: false}))
+
+
 
 // set static folder
 app.use(express.static(path.join(__dirname, 'public')));
+
+// All routers that start /api/members will use this route
+app.use('/api/members', require('./routes/api/members'));
 
 const PORT = process.env.PORT || 5000;
 
